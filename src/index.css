@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --color-tartan: #C2412D;
+  --color-ink: #1A1416;
+  --color-goal: #1F5FD1;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: #ffffff;
+    background-color: #1A1416;
+    scroll-padding-top: 5rem;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+}
+
+.font-display-condensed {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.tabular-figures {
+  font-variant-numeric: tabular-nums;
+}

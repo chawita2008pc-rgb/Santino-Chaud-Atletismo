@@ -1,0 +1,6 @@
+{
+  "name": "Santino Chaud — Atletismo",
+  "description": "Página personal y dossier de sponsorship de Santino Chaud, velocista y saltador argentino de 18 años.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
