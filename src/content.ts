@@ -211,7 +211,7 @@ export const siteContent = {
       tipo: 'video',
     } satisfies MediaAsset,
     relato:
-      'En junio, en un torneo metropolitano, corrí los 60 metros en 6,99. Ese mismo día, en salto en largo, me abrí la rodilla contra el cajón y estuve 3 meses sin entrenar. Cuando volví, salí 2.º en salto en largo en los Juegos Bonaerenses y quedé a un paso de clasificar a Mar del Plata. En octubre, en las últimas pruebas de los sports del colegio, me desgarré la pierna. Hacía mucho frío y estaba con fiebre, otitis y antibióticos. Igual gané la champion por tercer año seguido, gracias a los puntos que había sumado antes.',
+      'En junio, en un torneo metropolitano, corrí los 60 metros en 6,99. Ese mismo día, en salto en largo, me abrí la rodilla contra el cajón y estuve 3 meses sin entrenar. Cuando volví, salí 2.º en salto en largo en los Juegos Bonaerenses y quedé a un paso de clasificar a Mar del Plata. En octubre, en las últimas pruebas de los sports del colegio, me desgarré la pierna. Hacía mucho frío y estaba con fiebre, otitis y antibióticos. Igual gané la champion por tercer año seguido, gracias a los puntos que había sumado antes en el día.',
     hoy: 'Hoy estoy recuperado de las dos lesiones y listo para dar el siguiente paso.',
   },
 
