@@ -29,7 +29,7 @@ Shared as a link (WhatsApp, mail, in person) and read on phone or desktop. Spani
 - The page must not look AI-generated or templated.
 
 ## Evidence on Hand
-- Official marks: 60 m 6,99 s · 100 m 11,1 s · 200 m 22,8 s · largo 6,42 m · triple 13,30 m (electronic timing).
+- Official marks: 60 m 6,99 s · 100 m 11,17 s · 200 m 22,7 s · largo 6,42 m · triple 13,30 m (electronic timing).
 - Comparison tables from the 2026 U20 Argentine Championship (World Athletics source).
 - Photos and videos: 15 real files supplied by the owner (Nov 2026) live in `public/media/`, placed top to bottom in the order the owner gave (hero video first). Metadata (incl. GPS) stripped. Never fill a slot with stock or invented imagery.
 - No testimonials, press, or sponsor logos exist; never fabricate them.

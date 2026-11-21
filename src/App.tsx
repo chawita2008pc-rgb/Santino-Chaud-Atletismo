@@ -400,6 +400,9 @@ export default function App() {
                       <th scope="col" className="py-2 text-right font-medium">
                         Marca ({tabla.unidad})
                       </th>
+                      <th scope="col" className="w-24 py-2 text-right font-medium sm:w-28">
+                        Viento (m/s)
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -416,8 +419,21 @@ export default function App() {
                         >
                           {fila.esPropia ? `${fila.puesto}, mi marca` : fila.puesto}
                         </th>
-                        <td className={`figures py-3 text-right text-[clamp(1.75rem,2.6vw,2.5rem)] leading-none ${fila.esPropia ? 'pr-4' : ''}`}>
+                        <td className="figures py-3 text-right text-[clamp(1.75rem,2.6vw,2.5rem)] leading-none">
                           {fila.marca}
+                        </td>
+                        <td
+                          className={`py-3 text-right text-base tabular-nums sm:text-lg ${
+                            fila.esPropia ? 'pr-4 font-bold' : 'font-medium text-ink/80'
+                          }`}
+                        >
+                          {fila.viento}
+                          {fila.vientoExcedido && (
+                            <>
+                              <span aria-hidden="true">*</span>
+                              <span className="sr-only"> (por encima del límite permitido)</span>
+                            </>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -426,7 +442,16 @@ export default function App() {
               ))}
             </div>
 
-            <p className="mt-10 max-w-[75ch] text-sm leading-relaxed text-ink/70">{comparativa.nota}</p>
+            <div className="mt-8 max-w-[75ch] space-y-2 text-sm leading-relaxed text-ink/75">
+              <p>{comparativa.vientoAclaracion}</p>
+              <p>{comparativa.nota}</p>
+            </div>
+
+            <div className="mt-16 border-t border-ink pt-8 sm:mt-20">
+              <p className="display max-w-[22ch] text-[clamp(2rem,4.4vw,4rem)] leading-[1] [text-wrap:balance]">
+                {comparativa.cierre}
+              </p>
+            </div>
           </div>
         </section>
 

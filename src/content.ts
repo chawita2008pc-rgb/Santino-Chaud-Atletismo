@@ -25,6 +25,10 @@ export interface TrayectoriaHito {
 export interface FilaTablero {
   puesto: string;
   marca: string;
+  /** Viento en m/s, con signo (ej: "+1,2" o "−0,7") */
+  viento: string;
+  /** Viento a favor por encima de +2,0 m/s */
+  vientoExcedido?: boolean;
   esPropia?: boolean;
 }
 
@@ -88,14 +92,14 @@ export const siteContent = {
   sobreMi: {
     titulo: 'Sobre mí',
     texto:
-      'Tengo 18 años y vivo en Pilar. Hace 3 años empecé a ir al gimnasio. En los últimos 2 años me empezó a ir muy bien en atletismo del colegio, y en 2026 decidí dedicarme de lleno: empecé a entrenar y competir afuera.',
+      'Tengo 18 años y vivo en Pilar. Hace 3 años arranqué en el gimnasio. En los últimos 3 años me fue muy bien en atletismo del colegio, y en 2026 decidí dedicarme de lleno: ahora entreno y compito afuera.',
   },
 
   sports: {
     titulo: 'Los sports',
     bajada: 'De dónde vengo: un colegio y una camada que compiten en todo.',
     texto:
-      'Los sports son la fecha más importante del año en mi colegio, y mi camada es la más competitiva de la historia del colegio. En 2026 ganamos el ADE, el torneo intercolegial, y a donde vamos somos competitivos. Competir con un equipo así me empujó a ser bueno en todo: en los últimos tres años gané 24 medallas en 9 disciplinas.',
+      'Los sports son la fecha más importante del año, y mi camada es la más competitiva de la historia del colegio. En 2026 ganamos el ADE, el torneo intercolegial, y a donde vamos somos competitivos. Competir con un equipo así me empujó a ser bueno en todo: en los últimos tres años gané 24 medallas en 9 disciplinas.',
     numeros: [
       {id: 'medallas', valor: 24, etiqueta: 'medallas'},
       {id: 'disciplinas', valor: 9, etiqueta: 'disciplinas'},
@@ -118,8 +122,8 @@ export const siteContent = {
     aclaracion: 'Cronometraje electrónico',
     items: [
       {id: '60m', prueba: '60 m', numeroFinal: 6.99, decimales: 2, unidad: 's'},
-      {id: '100m', prueba: '100 m', numeroFinal: 11.1, decimales: 1, unidad: 's'},
-      {id: '200m', prueba: '200 m', numeroFinal: 22.8, decimales: 1, unidad: 's'},
+      {id: '100m', prueba: '100 m', numeroFinal: 11.17, decimales: 2, unidad: 's'},
+      {id: '200m', prueba: '200 m', numeroFinal: 22.7, decimales: 1, unidad: 's'},
       {id: 'largo', prueba: 'Salto en largo', numeroFinal: 6.42, decimales: 2, unidad: 'm'},
       {id: 'triple', prueba: 'Salto triple', numeroFinal: 13.3, decimales: 2, unidad: 'm'},
     ] satisfies MarcaItem[],
@@ -130,7 +134,7 @@ export const siteContent = {
     hitos: [
       {
         fecha: '2023',
-        descripcion: 'Empiezo el gimnasio.',
+        descripcion: 'Empiezo a ir al gimnasio.',
         imagen: {
           descripcion: '2023 · Gimnasio',
           alt: 'Santino en 2023, cuando empezó a ir al gimnasio',
@@ -138,8 +142,8 @@ export const siteContent = {
         },
       },
       {
-        fecha: 'Últimos 2 años',
-        descripcion: 'Me destaco en el colegio. Récord intercolegial ADE de 200 m (22,8 s).',
+        fecha: 'Últimos 3 años',
+        descripcion: 'Me destaco en el colegio. En 2025, récord intercolegial ADE de 200 m (22,7 s).',
         imagen: {
           descripcion: 'Récord intercolegial ADE 200 m',
           alt: 'Publicación del colegio con los resultados del torneo intercolegial ADE',
@@ -161,7 +165,7 @@ export const siteContent = {
       {
         fecha: '2026',
         descripcion:
-          'Entreno en Tigre y compito en torneos metropolitanos (11,1 en 100 m · 22,8 en 200 m · 6,42 m en largo).',
+          'Entreno en Tigre y compito en torneos metropolitanos (11,17 en 100 m · 22,7 en 200 m · 6,42 m en largo).',
         imagen: {
           descripcion: '2026 · Torneos metropolitanos',
           alt: 'Santino en el podio de un torneo metropolitano en 2026',
@@ -211,7 +215,7 @@ export const siteContent = {
       tipo: 'video',
     } satisfies MediaAsset,
     relato:
-      'En junio, en un torneo metropolitano, corrí los 60 metros en 6,99. Ese mismo día, en salto en largo, me abrí la rodilla contra el cajón y estuve 3 meses sin entrenar. Cuando volví, salí 2.º en salto en largo en los Juegos Bonaerenses y quedé a un paso de clasificar a Mar del Plata. En octubre, en las últimas pruebas de los sports del colegio, me desgarré la pierna. Hacía mucho frío y estaba con fiebre, otitis y antibióticos. Igual gané la champion por tercer año seguido, gracias a los puntos que había sumado antes en el día.',
+      'En junio, en un torneo metropolitano, corrí los 60 metros en 6,99. Ese mismo día, en salto en largo, me abrí la rodilla contra el borde del foso y estuve 3 meses sin entrenar. Cuando volví, salí 2.º en salto en largo en los Juegos Bonaerenses y quedé a un paso de clasificar a Mar del Plata. En octubre, en las últimas pruebas de los sports del colegio, me desgarré la pierna. Hacía mucho frío y estaba con fiebre, otitis y antibióticos. Igual gané la champion por tercer año seguido, gracias a los puntos que había sumado antes en el día.',
     hoy: 'Hoy estoy recuperado de las dos lesiones y listo para dar el siguiente paso.',
   },
 
@@ -233,12 +237,12 @@ export const siteContent = {
         detalle: 'Final A, Campeonato Argentino U20 2026',
         unidad: 's',
         filas: [
-          {puesto: '1.º', marca: '10,69'},
-          {puesto: '2.º', marca: '10,83'},
-          {puesto: '3.º', marca: '11,07'},
-          {puesto: 'Yo', marca: '11,1', esPropia: true},
-          {puesto: '4.º', marca: '11,14'},
-          {puesto: '5.º', marca: '11,18'},
+          {puesto: '1.º', marca: '10,69', viento: '−0,1'},
+          {puesto: '2.º', marca: '10,83', viento: '−0,1'},
+          {puesto: '3.º', marca: '11,07', viento: '−0,1'},
+          {puesto: '4.º', marca: '11,14', viento: '−0,1'},
+          {puesto: 'Yo', marca: '11,17', viento: '−0,7', esPropia: true},
+          {puesto: '5.º', marca: '11,18', viento: '−0,1'},
         ],
       },
       {
@@ -247,15 +251,18 @@ export const siteContent = {
         detalle: 'Final, Campeonato Argentino U20 2026',
         unidad: 'm',
         filas: [
-          {puesto: '1.º', marca: '7,19'},
-          {puesto: '2.º', marca: '6,63'},
-          {puesto: '3.º', marca: '6,49'},
-          {puesto: 'Yo', marca: '6,42', esPropia: true},
-          {puesto: '4.º', marca: '6,41'},
+          {puesto: '1.º', marca: '7,19', viento: '+4,3', vientoExcedido: true},
+          {puesto: '2.º', marca: '6,63', viento: '+2,4', vientoExcedido: true},
+          {puesto: '3.º', marca: '6,49', viento: '+1,6'},
+          {puesto: 'Yo', marca: '6,42', viento: '−1,3', esPropia: true},
+          {puesto: '4.º', marca: '6,41', viento: '+1,2'},
         ],
       },
     ] satisfies TablaComparativa[],
-    nota: 'Fuente: World Athletics, Campeonato Argentino U20, Rosario, mayo de 2026. Mis marcas son de otras competencias y se muestran como referencia.',
+    cierre: 'En mi primer año entrenando atletismo en serio, ya estaría en la final del Campeonato Argentino U20.',
+    vientoAclaracion:
+      '* Viento a favor de más de +2,0 m/s, el máximo permitido: la marca cuenta en la competencia, pero no para récords ni rankings.',
+    nota: 'Fuente: World Athletics, Campeonato Argentino U20, Rosario, 9 y 10 de mayo de 2026. Mis marcas son de otras competencias y se muestran como referencia.',
   },
 
   objetivos: {
@@ -264,7 +271,7 @@ export const siteContent = {
       {cifra: '10,7 s', texto: 'Llegar a los 10,7 segundos en 100 m.'},
       {cifra: '6,80 m', texto: 'Pasar los 6,80 m en salto en largo.'},
       {cifra: 'Nacionales', texto: 'Competir en los Nacionales.'},
-      {cifra: 'Club nuevo', texto: 'Entrenar con un profesor profesional en un nuevo club.'},
+      {cifra: 'Club nuevo', texto: 'Entrenar con un entrenador profesional en un club nuevo.'},
     ] satisfies ObjetivoItem[],
   },
 
