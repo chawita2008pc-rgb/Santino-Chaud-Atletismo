@@ -1,9 +1,7 @@
 import gsap from 'gsap';
-import {Menu, X} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {siteContent} from '../content';
 import {usePrefersReducedMotion} from '../hooks/usePrefersReducedMotion';
-import {MediaPlaceholder} from './MediaPlaceholder';
 
 interface NavbarProps {
   onNavigate: (href: string) => void;
@@ -11,111 +9,86 @@ interface NavbarProps {
 
 export function Navbar({onNavigate}: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const {marca, enlaces, cta, menuCompleto} = siteContent.navegacion;
+  const {marca, enlaces, menuCompleto} = siteContent.navegacion;
 
   useEffect(() => {
     if (!menuOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setMenuOpen(false);
-      }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
     };
-
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-
+    window.addEventListener('keydown', onKey);
+    closeRef.current?.focus();
     return () => {
       document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', onKey);
     };
   }, [menuOpen]);
 
   useEffect(() => {
     if (!menuOpen || !overlayRef.current || prefersReducedMotion) return;
-
     const ctx = gsap.context(() => {
       gsap.fromTo(
         overlayRef.current,
-        {opacity: 0},
-        {opacity: 1, duration: 0.4, ease: 'power2.out'},
+        {clipPath: 'inset(0 0 100% 0)'},
+        {clipPath: 'inset(0 0 0% 0)', duration: 0.6, ease: 'expo.out'},
       );
       gsap.fromTo(
-        '.fullscreen-menu-link',
-        {opacity: 0, y: 24},
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.55,
-          stagger: 0.045,
-          ease: 'power3.out',
-          delay: 0.08,
-        },
+        '.menu-link',
+        {yPercent: 100},
+        {yPercent: 0, duration: 0.7, stagger: 0.035, ease: 'expo.out', delay: 0.1},
       );
     }, overlayRef);
-
     return () => ctx.revert();
   }, [menuOpen, prefersReducedMotion]);
 
-  const handleLinkClick = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
-  ) => {
-    event.preventDefault();
+  const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
     setMenuOpen(false);
     onNavigate(href);
   };
 
   return (
     <>
-      <header className="fixed top-0 inset-x-0 z-50 pt-[3px] bg-[#1A1416]/90 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-8">
+      <header className="fixed inset-x-0 top-0 z-50 mix-blend-difference text-white">
+        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-8 px-5 sm:h-20 sm:px-10">
           <a
             href="#portada"
-            onClick={(e) => handleLinkClick(e, '#portada')}
-            className="font-display-condensed text-2xl tracking-tight text-white whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C2412D]"
+            onClick={(e) => go(e, '#portada')}
+            className="display text-lg sm:text-xl"
+            style={{lineHeight: 1}}
           >
             {marca}
           </a>
 
-          <nav
-            aria-label="Navegación principal"
-            className="hidden lg:flex items-center gap-6"
-          >
-            {enlaces.map((enlace) => (
-              <a
-                key={enlace.href}
-                href={enlace.href}
-                onClick={(e) => handleLinkClick(e, enlace.href)}
-                className="min-h-[44px] inline-flex items-center text-sm font-semibold text-white/80 hover:text-white transition-colors duration-150 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C2412D]"
-              >
-                {enlace.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3 shrink-0">
-            <a
-              href={cta.href}
-              onClick={(e) => handleLinkClick(e, cta.href)}
-              className="hidden sm:inline-flex items-center justify-center min-h-[44px] px-6 rounded-full bg-[#C2412D] text-white text-sm font-semibold hover:bg-[#C2412D]/90 transition-colors duration-150 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              {cta.label}
-            </a>
-
+          <div className="flex items-center gap-8">
+            <nav aria-label="Navegación principal" className="hidden items-center gap-7 lg:flex">
+              {enlaces.map((enlace) => (
+                <a
+                  key={enlace.href}
+                  href={enlace.href}
+                  onClick={(e) => go(e, enlace.href)}
+                  className="text-[0.95rem] font-medium hover:underline"
+                >
+                  {enlace.label}
+                </a>
+              ))}
+            </nav>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
               aria-expanded={menuOpen}
-              aria-controls="fullscreen-nav-menu"
-              aria-label="Abrir menú completo"
-              className="inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-full border border-white/25 text-white text-sm font-semibold hover:bg-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              aria-controls="menu-completo"
+              className="group inline-flex min-h-11 items-center gap-3 text-[0.95rem] font-medium"
             >
-              <Menu className="w-5 h-5" aria-hidden="true" />
-              <span className="hidden sm:inline">Menú</span>
+              <span>Menú</span>
+              <span aria-hidden="true" className="flex w-6 flex-col gap-[5px]">
+                <span className="h-[2px] w-full bg-current transition-transform duration-300 group-hover:translate-x-1" />
+                <span className="h-[2px] w-full bg-current" />
+              </span>
             </button>
           </div>
         </div>
@@ -123,78 +96,52 @@ export function Navbar({onNavigate}: NavbarProps) {
 
       {menuOpen && (
         <div
-          id="fullscreen-nav-menu"
+          id="menu-completo"
           ref={overlayRef}
           role="dialog"
           aria-modal="true"
-          aria-label="Menú de navegación"
-          className="fixed inset-0 z-[70] bg-[#C2412D] text-white overflow-y-auto"
+          aria-label="Menú"
+          data-lenis-prevent
+          className="fixed inset-0 z-[70] overflow-y-auto overscroll-contain bg-celeste text-ink"
         >
-          <div className="hidden lg:block fixed inset-0 pointer-events-none">
-            {menuCompleto.map((item, idx) => (
-              <div
-                key={item.href}
-                className={`absolute inset-y-0 right-0 w-1/2 p-12 flex items-center justify-center transition-opacity duration-500 ease-out ${
-                  activeIndex === idx ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <div className="w-full max-w-lg h-[72vh] opacity-90">
-                  <MediaPlaceholder
-                    tipo="foto"
-                    etiqueta={item.previewFoto.etiqueta}
-                    descripcion={item.previewFoto.descripcion}
-                    alt={item.previewFoto.alt}
-                    src={item.previewFoto.src}
-                    aspectClass="h-full"
-                    roundedClass="rounded-3xl"
-                    showCaption={false}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="relative z-10 min-h-full max-w-6xl mx-auto px-5 sm:px-8 py-5 flex flex-col justify-between">
-            <div className="flex items-center justify-between h-14">
-              <span className="font-display-condensed text-2xl tracking-tight text-white">
+          <div className="mx-auto flex min-h-full max-w-[1600px] flex-col px-5 sm:px-10">
+            <div className="flex h-16 items-center justify-between sm:h-20">
+              <span className="display text-lg sm:text-xl" style={{lineHeight: 1}}>
                 {marca}
               </span>
-
               <button
+                ref={closeRef}
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                aria-label="Cerrar menú"
-                className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-full bg-[#1A1416] text-white text-sm font-semibold hover:bg-[#1A1416]/85 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="inline-flex min-h-11 items-center gap-3 text-[0.95rem] font-medium"
+                style={{outlineColor: 'var(--color-ink)'}}
               >
-                <X className="w-5 h-5" aria-hidden="true" />
-                <span>Cerrar</span>
+                Cerrar
+                <span aria-hidden="true" className="relative block h-6 w-6">
+                  <span className="absolute top-1/2 left-0 h-[2px] w-full rotate-45 bg-current" />
+                  <span className="absolute top-1/2 left-0 h-[2px] w-full -rotate-45 bg-current" />
+                </span>
               </button>
             </div>
 
-            <nav aria-label="Secciones de la página" className="my-8 lg:w-1/2">
-              <ul className="space-y-1 sm:space-y-2">
-                {menuCompleto.map((item, idx) => (
-                  <li key={item.href} className="overflow-hidden">
+            <nav aria-label="Secciones" className="flex flex-1 items-center py-10">
+              <ul className="w-full">
+                {menuCompleto.map((item) => (
+                  <li key={item.href} className="overflow-hidden border-b border-ink/15 first:border-t">
                     <a
                       href={item.href}
-                      onMouseEnter={() => setActiveIndex(idx)}
-                      onFocus={() => setActiveIndex(idx)}
-                      onClick={(e) => handleLinkClick(e, item.href)}
-                      className="fullscreen-menu-link inline-flex items-baseline gap-4 min-h-[44px] py-1 font-display-condensed text-3xl sm:text-4xl lg:text-[2.75rem] leading-tight tracking-tight text-white/85 hover:text-white transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                      onClick={(e) => go(e, item.href)}
+                      className="menu-link display block py-3 text-[clamp(2rem,6vw,4.5rem)] transition-[padding] duration-300 ease-out hover:pl-4"
+                      style={{outlineColor: 'var(--color-ink)'}}
                     >
-                      <span className="tabular-figures text-lg sm:text-xl text-white/65">
-                        {String(idx + 1).padStart(2, '0')}
-                      </span>
-                      <span>{item.label}</span>
+                      {item.label}
                     </a>
                   </li>
                 ))}
               </ul>
             </nav>
 
-            <div className="pt-4 border-t border-white/25 text-sm text-white/90">
-              {siteContent.contacto.pie}
-            </div>
+            <p className="label pb-8 text-ink/75">{siteContent.cierre.pie}</p>
           </div>
         </div>
       )}

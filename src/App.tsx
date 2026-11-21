@@ -1,844 +1,530 @@
 import gsap from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import {ArrowUpRight, Check, Copy} from 'lucide-react';
 import {MotionConfig} from 'motion/react';
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {MarqueeStrip} from './components/MarqueeStrip';
-import {MediaPlaceholder} from './components/MediaPlaceholder';
+import {useCallback, useEffect, useRef} from 'react';
+import {Media} from './components/Media';
 import {Navbar} from './components/Navbar';
-import {ScrollProgressBar} from './components/ScrollProgressBar';
-import {SplitRevealText} from './components/SplitRevealText';
+import {ScrubText} from './components/ScrubText';
+import {Sports} from './components/Sports';
 import {siteContent} from './content';
 import {usePrefersReducedMotion} from './hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-function formatArgentineDecimal(value: number, decimals: number): string {
+function decimalAR(value: number, decimals: number): string {
   return value.toFixed(decimals).replace('.', ',');
 }
 
-export default function App() {
-  const [copiedMail, setCopiedMail] = useState(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
+const formatoGaleria: Record<string, string> = {
+  completa: 'col-span-2 row-span-2 lg:col-span-4',
+  grande: 'col-span-2 row-span-2',
+  alta: 'row-span-2',
+  ancha: 'col-span-2',
+  normal: '',
+};
 
+export default function App() {
+  const reduced = usePrefersReducedMotion();
   const lenisRef = useRef<Lenis | null>(null);
   const mainRef = useRef<HTMLElement>(null);
-  const heroLineRef = useRef<SVGLineElement>(null);
-  const marcasSectionRef = useRef<HTMLElement>(null);
-  const trayectoriaSectionRef = useRef<HTMLElement>(null);
-  const trayectoriaWrapperRef = useRef<HTMLDivElement>(null);
-  const trayectoriaTrackRef = useRef<HTMLDivElement>(null);
-  const cierrePhraseRef = useRef<HTMLParagraphElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const heroFrameRef = useRef<HTMLDivElement>(null);
+  const heroMediaRef = useRef<HTMLDivElement>(null);
+  const heroNameRef = useRef<HTMLHeadingElement>(null);
+  const marcasRef = useRef<HTMLElement>(null);
+  const trayRef = useRef<HTMLElement>(null);
+  const trayViewportRef = useRef<HTMLDivElement>(null);
+  const trayTrackRef = useRef<HTMLDivElement>(null);
+  const cierreRef = useRef<HTMLParagraphElement>(null);
 
-  // 1. Lenis Smooth Scroll + GSAP ScrollTrigger sync
+  // Scroll suave + sincronización con ScrollTrigger
   useEffect(() => {
-    if (prefersReducedMotion) {
-      lenisRef.current = null;
-      return;
-    }
-
+    if (reduced) return;
     const lenis = new Lenis({
-      duration: 1.05,
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
     });
     lenisRef.current = lenis;
-
     lenis.on('scroll', ScrollTrigger.update);
-
-    const onTick = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-    gsap.ticker.add(onTick);
+    const tick = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
-
     return () => {
-      gsap.ticker.remove(onTick);
+      gsap.ticker.remove(tick);
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, [prefersReducedMotion]);
+  }, [reduced]);
 
-  // Master GSAP animations (Hero, Counters, Trayectoria Horizontal Pin, Reveals, Closing Scale)
   useEffect(() => {
-    if (prefersReducedMotion || !mainRef.current) return;
+    if (reduced || !mainRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 2. Portada: letter-by-letter from bottom + SVG track line draw
-      gsap.fromTo(
-        '.hero-char',
-        {yPercent: 115, opacity: 0},
-        {
-          yPercent: 0,
-          opacity: 1,
-          duration: 0.65,
-          stagger: 0.028,
-          ease: 'power3.out',
-        },
-      );
+      // Portada: el cuadro se abre y el nombre sube letra por letra
+      const intro = gsap.timeline({defaults: {ease: 'expo.out'}});
+      intro
+        .from(heroFrameRef.current, {
+          clipPath: 'inset(14% 10% 14% 10%)',
+          duration: 1.2,
+        })
+        .from(heroMediaRef.current, {scale: 1.2, duration: 1.4}, 0)
+        .from('.hero-char', {yPercent: 105, duration: 0.8, stagger: 0.022}, 0.05)
+        .from('.hero-fade', {opacity: 0, y: 10, duration: 0.6, stagger: 0.06}, 0.3);
 
-      gsap.fromTo(
-        '.hero-fade',
-        {y: 18, opacity: 0},
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.08,
-          delay: 0.25,
-          ease: 'power3.out',
-        },
-      );
+      // Portada al scrollear: la foto se aleja y el nombre se despega
+      gsap.to(heroMediaRef.current, {
+        yPercent: 18,
+        ease: 'none',
+        scrollTrigger: {trigger: heroRef.current, start: 'top top', end: 'bottom top', scrub: true},
+      });
+      gsap.to(heroNameRef.current, {
+        yPercent: -40,
+        ease: 'none',
+        scrollTrigger: {trigger: heroRef.current, start: 'top top', end: 'bottom top', scrub: true},
+      });
 
-      if (heroLineRef.current) {
-        const length = heroLineRef.current.getTotalLength();
-        gsap.set(heroLineRef.current, {
-          strokeDasharray: length,
-          strokeDashoffset: length,
+      // Marcas: cuentan desde cero
+      gsap.utils.toArray<HTMLElement>('.marca-num').forEach((el) => {
+        const target = parseFloat(el.dataset.target ?? '0');
+        const decimals = parseInt(el.dataset.decimals ?? '2', 10);
+        const proxy = {v: 0};
+        gsap.to(proxy, {
+          v: target,
+          duration: 1.4,
+          ease: 'expo.out',
+          scrollTrigger: {trigger: el, start: 'top 88%', once: true},
+          onUpdate: () => {
+            el.textContent = decimalAR(proxy.v, decimals);
+          },
         });
-        gsap.to(heroLineRef.current, {
-          strokeDashoffset: 0,
-          duration: 0.85,
-          delay: 0.2,
-          ease: 'power2.out',
-        });
-      }
+      });
 
-      // 3. Mis Marcas: count up from 0 respecting comma decimal
-      const numberEls = gsap.utils.toArray<HTMLElement>('.marca-number');
-      if (numberEls.length > 0 && marcasSectionRef.current) {
-        numberEls.forEach((el) => {
-          const target = parseFloat(el.dataset.target ?? '0');
-          const decimals = parseInt(el.dataset.decimals ?? '2', 10);
-          const proxy = {val: 0};
-
-          gsap.to(proxy, {
-            val: target,
-            duration: 0.85,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: marcasSectionRef.current,
-              start: 'top 78%',
-              once: true,
-            },
-            onUpdate: () => {
-              el.textContent = formatArgentineDecimal(proxy.val, decimals);
-            },
-          });
-        });
-      }
-
-      // 5. Trayectoria: Desktop horizontal pin scrub; Mobile stays vertical
+      // Trayectoria: recorrido horizontal fijado en pantallas grandes
       const mm = gsap.matchMedia();
       mm.add('(min-width: 1024px)', () => {
-        const section = trayectoriaSectionRef.current;
-        const wrapper = trayectoriaWrapperRef.current;
-        const track = trayectoriaTrackRef.current;
-        if (!section || !wrapper || !track) return;
-
-        const getScrollDistance = () =>
-          Math.max(0, track.scrollWidth - wrapper.clientWidth);
-
-        if (getScrollDistance() <= 0) return;
-
+        const section = trayRef.current;
+        const viewport = trayViewportRef.current;
+        const track = trayTrackRef.current;
+        if (!section || !viewport || !track) return;
+        const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
+        if (distance() <= 0) return;
         gsap.to(track, {
-          x: () => -getScrollDistance(),
+          x: () => -distance(),
           ease: 'none',
           scrollTrigger: {
             trigger: section,
             pin: true,
-            scrub: 0.75,
+            scrub: 0.6,
             start: 'top top',
-            end: () => `+=${getScrollDistance()}`,
+            end: () => `+=${distance()}`,
             invalidateOnRefresh: true,
             anticipatePin: 1,
           },
         });
       });
 
-      // Generic clean section card staggers
-      gsap.utils.toArray<HTMLElement>('.gsap-stagger-group').forEach((group) => {
-        const items = group.querySelectorAll('.gsap-stagger-item');
-        if (items.length === 0) return;
-
-        gsap.fromTo(
-          items,
-          {opacity: 0, y: 20},
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            stagger: 0.08,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: group,
-              start: 'top 82%',
-              once: true,
-            },
-          },
-        );
+      // Fotos: se revelan con una cortina al entrar
+      gsap.utils.toArray<HTMLElement>('.reveal-media').forEach((el) => {
+        gsap.from(el, {
+          clipPath: 'inset(100% 0 0 0)',
+          duration: 1.3,
+          ease: 'expo.out',
+          scrollTrigger: {trigger: el, start: 'top 90%', once: true},
+        });
       });
 
-      // 9. Cierre: subtle scale up on scroll
-      if (cierrePhraseRef.current) {
+      // Pantalla completa: el cuadro se abre a sangre al entrar y la imagen se desplaza
+      gsap.fromTo(
+        '.pantalla-completa',
+        {clipPath: 'inset(0% 8% 0% 8%)'},
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          ease: 'none',
+          scrollTrigger: {trigger: '.pantalla-completa', start: 'top 95%', end: 'top 20%', scrub: 0.5},
+        },
+      );
+      gsap.fromTo(
+        '.pantalla-media',
+        {yPercent: -8, scale: 1.12},
+        {
+          yPercent: 8,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {trigger: '.pantalla-completa', start: 'top bottom', end: 'bottom top', scrub: true},
+        },
+      );
+
+      // Cierre: la frase crece al scrollear
+      if (cierreRef.current) {
         gsap.fromTo(
-          cierrePhraseRef.current,
-          {scale: 0.9, opacity: 0.75},
+          cierreRef.current,
+          {scale: 0.86},
           {
-            scale: 1.07,
-            opacity: 1,
+            scale: 1,
             ease: 'none',
-            scrollTrigger: {
-              trigger: cierrePhraseRef.current,
-              start: 'top 90%',
-              end: 'bottom 25%',
-              scrub: 0.6,
-            },
+            scrollTrigger: {trigger: cierreRef.current, start: 'top 95%', end: 'bottom 40%', scrub: 0.5},
           },
         );
       }
-
-      ScrollTrigger.refresh();
     }, mainRef);
 
     let active = true;
-    document.fonts?.ready.then(() => {
-      if (active) {
-        ScrollTrigger.refresh();
-      }
-    });
-
+    document.fonts?.ready.then(() => active && ScrollTrigger.refresh());
     return () => {
       active = false;
       ctx.revert();
     };
-  }, [prefersReducedMotion]);
+  }, [reduced]);
 
-  const handleNavigate = useCallback(
+  const navigate = useCallback(
     (href: string) => {
       const target = document.querySelector<HTMLElement>(href);
       if (!target) return;
-
-      if (lenisRef.current && !prefersReducedMotion) {
-        lenisRef.current.scrollTo(target, {offset: -64, duration: 0.9});
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(target, {offset: href === '#portada' ? 0 : -64, duration: 1.2});
       } else {
-        target.scrollIntoView({behavior: prefersReducedMotion ? 'auto' : 'smooth'});
+        target.scrollIntoView({behavior: reduced ? 'auto' : 'smooth'});
       }
     },
-    [prefersReducedMotion],
+    [reduced],
   );
 
-  const handleCopyMail = async () => {
-    const mail = siteContent.contacto.mail;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(mail);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = mail;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      setCopiedMail(true);
-      window.setTimeout(() => setCopiedMail(false), 2500);
-    } catch {
-      setCopiedMail(false);
-    }
-  };
-
-  const heroWords = siteContent.portada.nombre.split(' ');
+  const {portada, sobreMi, marcas, trayectoria, superacion, pantallaCompleta, comparativa, objetivos, galeria, queNecesito, cierre} =
+    siteContent;
+  const [nombre, apellido] = portada.nombre.split(' ');
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-[#1A1416] text-white overflow-x-hidden">
-        <ScrollProgressBar />
-        <Navbar onNavigate={handleNavigate} />
+      <Navbar onNavigate={navigate} />
 
-        <main ref={mainRef}>
-          {/* SECCIÓN 1 · PORTADA */}
-          <section
-            id="portada"
-            className="bg-[#1A1416] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <p className="hero-fade text-sm sm:text-base font-semibold text-white/75 tracking-wide">
-                {siteContent.portada.bajada}
-              </p>
-
-              <h1
-                aria-label={siteContent.portada.nombre}
-                className="mt-3 font-display-condensed text-[clamp(3.6rem,14vw,10.25rem)] leading-[0.88] tracking-tight text-white w-full"
-              >
-                {heroWords.map((word, wIdx) => (
-                  <span
-                    key={wIdx}
-                    aria-hidden="true"
-                    className="inline-block whitespace-nowrap mr-[0.24em] last:mr-0"
-                  >
-                    {Array.from(word).map((char, cIdx) => (
-                      <span
-                        key={`${wIdx}-${cIdx}`}
-                        className="inline-block overflow-hidden align-bottom"
-                      >
-                        <span className="hero-char inline-block will-change-transform">
-                          {char}
-                        </span>
-                      </span>
-                    ))}
-                  </span>
-                ))}
-              </h1>
-
-              {/* Línea blanca tipo carril de pista (trazo SVG izquierda -> derecha) */}
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 1200 10"
-                preserveAspectRatio="none"
-                className="w-full h-3 mt-4 mb-10 block"
-              >
-                <line
-                  ref={heroLineRef}
-                  x1="0"
-                  y1="5"
-                  x2="1200"
-                  y2="5"
-                  stroke="#FFFFFF"
-                  strokeWidth="2.5"
-                />
-              </svg>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
-                <div className="hero-fade lg:col-span-6 flex flex-col justify-center">
-                  <p className="text-2xl sm:text-3xl font-semibold text-white">
-                    {siteContent.portada.frase}
-                  </p>
-
-                  <div className="mt-8 flex flex-wrap items-center gap-4">
-                    <a
-                      href={siteContent.portada.botonPrimario.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigate(siteContent.portada.botonPrimario.href);
-                      }}
-                      className="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-[#C2412D] text-white font-semibold text-base hover:bg-[#C2412D]/90 transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                    >
-                      {siteContent.portada.botonPrimario.label}
-                    </a>
-                    <a
-                      href={siteContent.portada.botonSecundario.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigate(siteContent.portada.botonSecundario.href);
-                      }}
-                      className="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full border border-white/30 text-white font-semibold text-base hover:bg-white/10 transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                    >
-                      {siteContent.portada.botonSecundario.label}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="hero-fade lg:col-span-6 flex flex-col">
-                  <div className="w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-[400px]">
-                    <MediaPlaceholder
-                      tipo="foto"
-                      etiqueta={siteContent.portada.imagen.etiqueta}
-                      descripcion={siteContent.portada.imagen.descripcion}
-                      alt={siteContent.portada.imagen.alt}
-                      src={siteContent.portada.imagen.src}
-                      aspectClass="h-full min-h-[300px] sm:min-h-[360px] lg:min-h-[400px]"
-                      roundedClass="rounded-3xl"
-                      showCaption={false}
-                    />
-                  </div>
-                </div>
-              </div>
+      <main ref={mainRef} className="overflow-x-clip">
+        {/* PORTADA */}
+        <section ref={heroRef} id="portada" className="relative h-[100svh] min-h-[560px] bg-ink">
+          <div ref={heroFrameRef} className="absolute inset-0 overflow-hidden" style={{clipPath: 'inset(0% 0% 0% 0%)'}}>
+            <div ref={heroMediaRef} className="absolute inset-0 will-change-transform">
+              <Media
+                tipo={portada.imagen.tipo}
+                descripcion={portada.imagen.descripcion}
+                alt={portada.imagen.alt}
+                src={portada.imagen.src}
+                className="h-full"
+                etiquetaArriba
+                prioridad
+              />
             </div>
-          </section>
-
-          {/* SECCIÓN 2 · MIS MARCAS */}
-          <section
-            ref={marcasSectionRef}
-            id="marcas"
-            aria-labelledby="titulo-marcas"
-            className="bg-white text-[#1A1416] py-16 sm:py-22"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-10">
-                <h2
-                  id="titulo-marcas"
-                  className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-[#1A1416]"
-                >
-                  {siteContent.marcas.titulo}
-                </h2>
-                <p className="text-sm font-semibold text-[#1A1416]/75">
-                  {siteContent.marcas.aclaracion}
-                </p>
-              </div>
-
-              <div className="gsap-stagger-group grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
-                {siteContent.marcas.items.map((marca) => (
-                  <div
-                    key={marca.id}
-                    className="gsap-stagger-item rounded-3xl bg-[#1A1416] text-white p-6 sm:p-7 flex flex-col justify-between"
-                  >
-                    <span className="text-sm sm:text-base font-semibold text-white/75">
-                      {marca.prueba}
-                    </span>
-                    <div className="mt-5 font-display-condensed tabular-figures text-5xl sm:text-[3.5rem] leading-none tracking-tight text-white flex items-baseline gap-1.5">
-                      <span
-                        className="marca-number"
-                        data-target={marca.numeroFinal}
-                        data-decimals={marca.decimales}
-                      >
-                        {formatArgentineDecimal(marca.numeroFinal, marca.decimales)}
-                      </span>
-                      <span className="text-3xl sm:text-4xl text-[#C2412D]">
-                        {marca.unidad}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* CINTA DE TEXTO EN MOVIMIENTO */}
-          <MarqueeStrip text={siteContent.cinta} />
-
-          {/* SECCIÓN 3 · SOBRE MÍ */}
-          <section
-            id="sobre-mi"
-            aria-labelledby="titulo-sobre-mi"
-            className="bg-[#1A1416] text-white py-20 sm:py-28"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-                <div className="lg:col-span-4">
-                  <h2
-                    id="titulo-sobre-mi"
-                    className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-white"
-                  >
-                    {siteContent.sobreMi.titulo}
-                  </h2>
-                </div>
-                <div className="lg:col-span-8">
-                  <SplitRevealText
-                    paragraphs={[siteContent.sobreMi.texto]}
-                    paragraphClassName="text-xl sm:text-2xl lg:text-[1.7rem] leading-[1.5] font-normal text-white/90 max-w-[65ch]"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* SECCIÓN 4 · TRAYECTORIA (Horizontal Pin en PC, Vertical en Celular) */}
-          <section
-            ref={trayectoriaSectionRef}
-            id="trayectoria"
-            aria-labelledby="titulo-trayectoria"
-            className="bg-[#C2412D] text-white py-16 sm:py-20 lg:min-h-screen lg:flex lg:flex-col lg:justify-center overflow-hidden"
-          >
-            <div className="max-w-6xl w-full mx-auto px-5 sm:px-8">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-8 sm:mb-10">
-                <h2
-                  id="titulo-trayectoria"
-                  className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-white"
-                >
-                  {siteContent.trayectoria.titulo}
-                </h2>
-              </div>
-
-              <div ref={trayectoriaWrapperRef} className="w-full">
-                <div
-                  ref={trayectoriaTrackRef}
-                  className={
-                    prefersReducedMotion
-                      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-                      : 'flex flex-col gap-6 lg:flex-row lg:w-max lg:will-change-transform'
-                  }
-                >
-                  {siteContent.trayectoria.hitos.map((hito) => (
-                    <article
-                      key={hito.numero}
-                      className={`rounded-3xl bg-[#1A1416] text-white p-6 sm:p-7 flex flex-col justify-between gap-5 ${
-                        prefersReducedMotion ? 'w-full' : 'w-full lg:w-[400px] xl:w-[430px] shrink-0'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-4">
-                          <h3 className="font-display-condensed text-3xl sm:text-4xl tracking-tight text-white">
-                            {hito.fecha}
-                          </h3>
-                          <span className="font-display-condensed tabular-figures text-xl text-[#C2412D]">
-                            {hito.numero}
-                          </span>
-                        </div>
-
-                        <p className="mt-3 text-base sm:text-lg leading-relaxed text-white/85">
-                          {hito.descripcion}
-                        </p>
-                      </div>
-
-                      <div className="pt-2">
-                        <MediaPlaceholder
-                          tipo="foto"
-                          etiqueta={hito.imagen.etiqueta}
-                          descripcion={hito.imagen.descripcion}
-                          alt={hito.imagen.alt}
-                          src={hito.imagen.src}
-                          aspectClass="aspect-[16/10]"
-                          roundedClass="rounded-2xl"
-                          showCaption={false}
-                        />
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* SECCIÓN 5 · LO QUE ME TOCÓ SUPERAR */}
-          <section
-            id="superacion"
-            aria-labelledby="titulo-superacion"
-            className="bg-[#1A1416] text-white py-24 sm:py-32"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <div className="max-w-4xl">
-                <h2
-                  id="titulo-superacion"
-                  className="font-display-condensed text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white [text-wrap:balance]"
-                >
-                  {siteContent.superacion.titulo}
-                </h2>
-
-                <SplitRevealText
-                  paragraphs={siteContent.superacion.parrafos}
-                  className="mt-8 sm:mt-10 space-y-6"
-                  paragraphClassName="text-xl sm:text-2xl lg:text-[1.65rem] leading-[1.55] font-normal text-white/90 last:pt-6 last:border-t last:border-white/20 last:font-semibold"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* SECCIÓN 6 · DÓNDE ESTOY HOY */}
-          <section
-            id="comparativa"
-            aria-labelledby="titulo-comparativa"
-            className="bg-white text-[#1A1416] py-16 sm:py-22"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <h2
-                id="titulo-comparativa"
-                className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-[#1A1416]"
-              >
-                {siteContent.comparativa.titulo}
-              </h2>
-
-              <div className="gsap-stagger-group mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-                {siteContent.comparativa.tablas.map((tabla) => (
-                  <div
-                    key={tabla.id}
-                    className="gsap-stagger-item rounded-3xl bg-[#1A1416] text-white overflow-hidden"
-                  >
-                    <div className="px-6 py-5 border-b border-white/12">
-                      <h3 className="font-display-condensed text-2xl sm:text-[1.75rem] tracking-tight text-white">
-                        {tabla.titulo}
-                      </h3>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="border-b border-white/12 text-xs font-semibold text-white/75">
-                            <th scope="col" className="py-3.5 px-6">
-                              Posición
-                            </th>
-                            <th scope="col" className="py-3.5 px-6 text-right">
-                              Marca ({tabla.unidad})
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/10">
-                          {tabla.filas.map((fila) => (
-                            <tr
-                              key={`${tabla.id}-${fila.puesto}-${fila.marca}`}
-                              className={
-                                fila.esPropia
-                                  ? 'bg-[#C2412D] text-white'
-                                  : 'text-white/95'
-                              }
-                            >
-                              <td className="py-3.5 px-6 font-display-condensed tabular-figures text-2xl tracking-wide">
-                                {fila.esPropia ? (
-                                  <span className="inline-flex items-center gap-2">
-                                    <span>{fila.puesto}</span>
-                                    <span className="font-sans text-xs font-semibold tracking-normal">
-                                      (Mi marca)
-                                    </span>
-                                  </span>
-                                ) : (
-                                  fila.puesto
-                                )}
-                              </td>
-                              <td className="py-3.5 px-6 text-right font-display-condensed tabular-figures text-3xl tracking-tight">
-                                {fila.marca}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <p className="mt-6 text-sm leading-relaxed text-[#1A1416]/75 max-w-4xl">
-                {siteContent.comparativa.nota}
-              </p>
-
-              <p className="mt-8 text-lg sm:text-xl lg:text-2xl font-semibold leading-relaxed text-[#1A1416] max-w-3xl">
-                {siteContent.comparativa.cierre}
-              </p>
-            </div>
-          </section>
-
-          {/* SECCIÓN 7 · OBJETIVOS 2027 */}
-          <section
-            id="objetivos"
-            aria-labelledby="titulo-objetivos"
-            className="bg-white text-[#1A1416] pt-6 pb-16 sm:pb-22 border-t border-[#1A1416]/10"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-10 sm:pt-14">
-              <h2
-                id="titulo-objetivos"
-                className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-[#1F5FD1]"
-              >
-                {siteContent.objetivos.titulo}
-              </h2>
-
-              <div className="gsap-stagger-group mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-                {siteContent.objetivos.items.map((objetivo) => (
-                  <div
-                    key={objetivo.numero}
-                    className="gsap-stagger-item rounded-3xl p-7 sm:p-8 bg-[#1F5FD1] text-white flex flex-col justify-between gap-6"
-                  >
-                    <span className="font-display-condensed tabular-figures text-4xl sm:text-5xl leading-none text-white/85">
-                      {objetivo.numero}
-                    </span>
-                    <p className="text-lg sm:text-xl font-semibold leading-snug text-white">
-                      {objetivo.texto}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* SECCIÓN 8 · GALERÍA */}
-          <section
-            id="galeria"
-            aria-labelledby="titulo-galeria"
-            className="bg-[#1A1416] text-white py-16 sm:py-22"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-10">
-                <h2
-                  id="titulo-galeria"
-                  className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-white"
-                >
-                  {siteContent.galeria.titulo}
-                </h2>
-                <p className="text-sm sm:text-base font-normal text-white/75">
-                  {siteContent.galeria.subtitulo}
-                </p>
-              </div>
-
-              <div className="gsap-stagger-group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-                {siteContent.galeria.items.map((item) => (
-                  <div key={item.id} className="gsap-stagger-item">
-                    <MediaPlaceholder
-                      tipo={item.tipo}
-                      etiqueta={item.etiqueta}
-                      descripcion={item.descripcion}
-                      alt={item.alt}
-                      src={item.src}
-                      srcSecundaria={item.srcSecundaria}
-                      etiquetaSecundaria={item.etiquetaSecundaria}
-                      descripcionSecundaria={item.descripcionSecundaria}
-                      aspectClass="aspect-[4/3]"
-                      roundedClass="rounded-2xl"
-                      showCaption
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* SECCIÓN 9 · APOYAME */}
-          <section
-            id="apoyame"
-            aria-labelledby="titulo-apoyame"
-            className="bg-white text-[#1A1416] py-16 sm:py-22"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <h2
-                id="titulo-apoyame"
-                className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-[#1A1416]"
-              >
-                {siteContent.apoyame.titulo}
-              </h2>
-
-              <div className="gsap-stagger-group mt-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
-                <div className="gsap-stagger-item">
-                  <h3 className="font-display-condensed text-3xl tracking-tight text-[#C2412D]">
-                    {siteContent.apoyame.necesitoTitulo}
-                  </h3>
-                  <ul className="mt-5 divide-y divide-[#1A1416]/12 border-y border-[#1A1416]/12">
-                    {siteContent.apoyame.necesito.map((item) => (
-                      <li
-                        key={item}
-                        className="py-3.5 text-base sm:text-lg font-normal text-[#1A1416]"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="gsap-stagger-item">
-                  <h3 className="font-display-condensed text-3xl tracking-tight text-[#1A1416]">
-                    {siteContent.apoyame.ofrezcoTitulo}
-                  </h3>
-                  <ul className="mt-5 divide-y divide-[#1A1416]/12 border-y border-[#1A1416]/12">
-                    {siteContent.apoyame.ofrezco.map((item) => (
-                      <li
-                        key={item}
-                        className="py-3.5 text-base sm:text-lg font-normal text-[#1A1416]"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-10">
-                <a
-                  href={siteContent.apoyame.boton.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigate(siteContent.apoyame.boton.href);
-                  }}
-                  className="inline-flex items-center justify-center min-h-[48px] px-8 rounded-full bg-[#C2412D] text-white font-semibold text-base hover:bg-[#C2412D]/90 transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A1416]"
-                >
-                  {siteContent.apoyame.boton.label}
-                </a>
-              </div>
-            </div>
-          </section>
-
-          {/* CIERRE PREVIO AL CONTACTO */}
-          <div className="bg-[#1A1416] text-white py-20 sm:py-28 overflow-hidden">
-            <div className="max-w-6xl mx-auto px-5 sm:px-8 flex justify-center">
-              <p
-                ref={cierrePhraseRef}
-                className="font-display-condensed text-center text-[clamp(2.75rem,8.5vw,7rem)] leading-[0.95] tracking-tight text-white [text-wrap:balance] will-change-transform"
-              >
-                {siteContent.portada.frase}
-              </p>
-            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent"
+            />
           </div>
 
-          {/* SECCIÓN 10 · CONTACTO */}
-          <section
-            id="contacto"
-            aria-labelledby="titulo-contacto"
-            className="bg-[#C2412D] text-white pt-16 pb-12 sm:pt-20 sm:pb-14"
-          >
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-              <h2
-                id="titulo-contacto"
-                className="font-display-condensed text-4xl sm:text-5xl tracking-tight text-white"
-              >
-                {siteContent.contacto.titulo}
-              </h2>
-
-              <div className="gsap-stagger-group mt-8 grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                {siteContent.contacto.canales.map((canal) => {
-                  const isExternal = canal.id !== 'mail';
-                  return (
-                    <div
-                      key={canal.id}
-                      className="gsap-stagger-item rounded-3xl bg-[#1A1416]/25 border border-white/25 p-6 flex flex-col justify-between gap-6"
-                    >
-                      <div>
-                        <span className="text-sm font-semibold text-white/90">
-                          {canal.etiqueta}
-                        </span>
-                        <p className="mt-2 font-display-condensed text-2xl sm:text-3xl tracking-tight text-white break-words">
-                          {canal.valorVisible}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3">
-                        <a
-                          href={canal.href}
-                          target={isExternal ? '_blank' : undefined}
-                          rel={isExternal ? 'noopener noreferrer' : undefined}
-                          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-full bg-white text-[#1A1416] text-sm font-semibold hover:bg-white/90 transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                        >
-                          <span>Abrir {canal.etiqueta}</span>
-                          <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-                        </a>
-
-                        {canal.id === 'mail' && (
-                          <button
-                            type="button"
-                            onClick={handleCopyMail}
-                            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-full border border-white text-white text-sm font-semibold hover:bg-white/15 transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                          >
-                            {copiedMail ? (
-                              <>
-                                <Check className="w-4 h-4" aria-hidden="true" />
-                                <span>{siteContent.contacto.mailCopiadoLabel}</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-4 h-4" aria-hidden="true" />
-                                <span>{siteContent.contacto.copiarMailLabel}</span>
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div aria-live="polite" className="sr-only">
-                {copiedMail ? siteContent.contacto.mailCopiadoLabel : ''}
-              </div>
-
-              <p className="mt-14 font-display-condensed text-3xl sm:text-4xl tracking-tight text-white">
-                {siteContent.contacto.cierre}
-              </p>
-
-              <footer className="mt-10 pt-6 border-t border-white/25 text-sm font-normal text-white/90">
-                {siteContent.contacto.pie}
-              </footer>
+          <div className="relative z-10 mx-auto flex h-full max-w-[1600px] flex-col justify-end px-5 pb-6 sm:px-10 sm:pb-10">
+            <div className="mb-6 sm:mb-8">
+              <p className="hero-fade max-w-[26ch] text-base lg:max-w-none font-medium text-paper/90 sm:text-lg">{portada.bajada}</p>
             </div>
-          </section>
-        </main>
-      </div>
+
+            <h1
+              ref={heroNameRef}
+              aria-label={portada.nombre}
+              className="display text-[18vw] text-paper lg:flex lg:justify-between lg:text-[10.4vw] min-[1600px]:text-[166px]"
+            >
+              {[nombre, apellido].map((palabra) => (
+                <span key={palabra} aria-hidden="true" className="block overflow-hidden pb-[0.04em]">
+                  {Array.from(palabra).map((c, i) => (
+                    <span key={i} className="hero-char inline-block">
+                      {c}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </h1>
+          </div>
+        </section>
+
+        {/* SOBRE MÍ */}
+        <section id="sobre-mi" aria-labelledby="t-sobre-mi" className="bg-paper text-ink">
+          <div className="mx-auto grid max-w-[1600px] gap-8 px-5 pt-24 pb-12 sm:px-10 sm:pt-36 sm:pb-16 lg:grid-cols-12 lg:gap-10">
+            <h2 id="t-sobre-mi" className="display text-[clamp(2rem,3.4vw,3.25rem)] lg:col-span-3">
+              {sobreMi.titulo}
+            </h2>
+            <ScrubText
+              text={sobreMi.texto}
+              className="text-[clamp(1.6rem,3.1vw,3.1rem)] leading-[1.18] font-medium tracking-[-0.02em] lg:col-span-9"
+            />
+          </div>
+        </section>
+
+        {/* LOS SPORTS */}
+        <Sports />
+
+        {/* MIS MARCAS */}
+        <section ref={marcasRef} id="marcas" aria-labelledby="t-marcas" className="bg-celeste text-ink">
+          <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-10 sm:py-28">
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-4 sm:mb-14">
+              <h2 id="t-marcas" className="display text-[clamp(3rem,8vw,7.5rem)]">
+                {marcas.titulo}
+              </h2>
+              <p className="text-lg font-semibold text-ink/85 sm:text-2xl">{marcas.aclaracion}</p>
+            </div>
+
+            <ul>
+              {marcas.items.map((m) => (
+                <li
+                  key={m.id}
+                  className="grid grid-cols-[1fr_auto] items-baseline gap-4 border-t border-ink/25 py-4 last:border-b sm:py-5"
+                >
+                  <span className="text-lg font-semibold sm:text-2xl">{m.prueba}</span>
+                  <span className="figures text-[clamp(3.25rem,10vw,9.5rem)] leading-[0.9]">
+                    <span className="marca-num" data-target={m.numeroFinal} data-decimals={m.decimales}>
+                      {decimalAR(m.numeroFinal, m.decimales)}
+                    </span>
+                    <span className="ml-2 text-[0.38em] font-semibold tracking-normal text-celeste-deep">{m.unidad}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* TRAYECTORIA */}
+        <section
+          ref={trayRef}
+          id="trayectoria"
+          aria-labelledby="t-trayectoria"
+          className={`bg-ink text-paper ${reduced ? '' : 'lg:flex lg:h-[100svh] lg:flex-col lg:justify-center'}`}
+        >
+          <div className={`mx-auto w-full max-w-[1600px] px-5 pt-24 pb-20 sm:px-10 ${reduced ? 'lg:pt-32 lg:pb-32' : 'lg:py-0'}`}>
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-4 lg:mb-12">
+              <h2 id="t-trayectoria" className="display text-[clamp(3rem,8vw,7.5rem)]">
+                {trayectoria.titulo}
+              </h2>
+            </div>
+
+            <div ref={trayViewportRef} className="lg:overflow-visible">
+              <div
+                ref={trayTrackRef}
+                className={
+                  reduced
+                    ? 'grid gap-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-[4vw]'
+                    : 'flex flex-col gap-14 lg:w-max lg:flex-row lg:gap-[4vw]'
+                }
+              >
+                {trayectoria.hitos.map((hito) => (
+                  <article key={hito.fecha} className={reduced ? '' : 'lg:w-[min(30vw,460px)] lg:shrink-0'}>
+                    <Media
+                      tipo={'tipo' in hito.imagen ? hito.imagen.tipo : 'foto'}
+                      ajuste={'ajuste' in hito.imagen ? hito.imagen.ajuste : 'cubrir'}
+                      descripcion={hito.imagen.descripcion}
+                      alt={hito.imagen.alt}
+                      src={hito.imagen.src}
+                      className="aspect-[4/3] lg:aspect-[16/11]"
+                    />
+                    <h3 className="mt-5 text-[clamp(1.6rem,2.2vw,2.15rem)] leading-[1.05] font-bold tracking-[-0.02em] text-celeste">
+                      {hito.fecha}
+                    </h3>
+                    <p className="mt-3 max-w-[40ch] text-lg leading-snug text-paper/85">{hito.descripcion}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* LO QUE ME TOCÓ SUPERAR */}
+        <section id="superacion" aria-labelledby="t-superacion" className="border-t border-paper/10 bg-ink text-paper">
+          <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-36">
+            <h2
+              id="t-superacion"
+              className="display max-w-[12ch] text-[clamp(2.75rem,7vw,6.5rem)] [text-wrap:balance]"
+            >
+              {superacion.titulo}
+            </h2>
+
+            <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-10">
+              <div className="lg:col-span-5">
+                <Media
+                  tipo={superacion.imagen.tipo}
+                  descripcion={superacion.imagen.descripcion}
+                  alt={superacion.imagen.alt}
+                  src={superacion.imagen.src}
+                  className="reveal-media aspect-[4/5] lg:sticky lg:top-28"
+                />
+              </div>
+              <div className="lg:col-span-7">
+                <ScrubText
+                  text={superacion.relato}
+                  className="text-[clamp(1.35rem,2.2vw,2.1rem)] leading-[1.32] font-normal tracking-[-0.01em]"
+                />
+                <p className="display mt-14 text-[clamp(2rem,4vw,3.75rem)] leading-[1.05] text-celeste [text-wrap:balance]">
+                  {superacion.hoy}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PANTALLA COMPLETA */}
+        <section aria-label={pantallaCompleta.descripcion} className="pantalla-completa relative h-[85svh] min-h-[480px] overflow-hidden bg-ink">
+          <div className="pantalla-media absolute inset-0 will-change-transform">
+            <Media
+              tipo={pantallaCompleta.tipo}
+              descripcion={pantallaCompleta.descripcion}
+              alt={pantallaCompleta.alt}
+              src={pantallaCompleta.src}
+              className="h-full"
+            />
+          </div>
+        </section>
+
+        {/* DÓNDE ESTOY HOY */}
+        <section id="comparativa" aria-labelledby="t-comparativa" className="bg-paper text-ink">
+          <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-32">
+            <h2 id="t-comparativa" className="display text-[clamp(3rem,8vw,7.5rem)]">
+              {comparativa.titulo}
+            </h2>
+            <p className="mt-5 max-w-[40ch] text-lg text-ink/75 sm:text-xl">{comparativa.bajada}</p>
+
+            <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-16">
+              {comparativa.tablas.map((tabla) => (
+                <table key={tabla.id} className="w-full border-collapse text-left">
+                  <caption className="mb-5 text-left">
+                    <span className="display block text-[clamp(1.9rem,3vw,2.75rem)]">{tabla.prueba}</span>
+                    <span className="label mt-2 block text-ink/70">{tabla.detalle}</span>
+                  </caption>
+                  <thead>
+                    <tr className="label border-b border-ink text-ink/70">
+                      <th scope="col" className="py-2 pr-4 font-medium">
+                        Puesto
+                      </th>
+                      <th scope="col" className="py-2 text-right font-medium">
+                        Marca ({tabla.unidad})
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tabla.filas.map((fila) => (
+                      <tr
+                        key={`${tabla.id}-${fila.puesto}`}
+                        className={
+                          fila.esPropia ? 'bg-celeste' : 'border-b border-ink/15'
+                        }
+                      >
+                        <th
+                          scope="row"
+                          className={`py-3 pr-4 text-left text-lg ${fila.esPropia ? 'pl-4 font-bold' : 'font-medium'}`}
+                        >
+                          {fila.esPropia ? `${fila.puesto}, mi marca` : fila.puesto}
+                        </th>
+                        <td className={`figures py-3 text-right text-[clamp(1.75rem,2.6vw,2.5rem)] leading-none ${fila.esPropia ? 'pr-4' : ''}`}>
+                          {fila.marca}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ))}
+            </div>
+
+            <p className="mt-10 max-w-[75ch] text-sm leading-relaxed text-ink/70">{comparativa.nota}</p>
+          </div>
+        </section>
+
+        {/* OBJETIVOS 2027 */}
+        <section id="objetivos" aria-labelledby="t-objetivos" className="bg-ink text-paper">
+          <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-32">
+            <h2 id="t-objetivos" className="display text-[clamp(3rem,8vw,7.5rem)]">
+              {objetivos.titulo}
+            </h2>
+            <ul className="mt-12 sm:mt-16">
+              {objetivos.items.map((o) => (
+                <li
+                  key={o.cifra}
+                  className="grid gap-2 border-t border-paper/15 py-6 last:border-b sm:grid-cols-12 sm:items-baseline sm:gap-10 sm:py-8"
+                >
+                  <span className="display text-[clamp(2.5rem,6vw,5.5rem)] text-celeste sm:col-span-6">{o.cifra}</span>
+                  <span className="text-xl leading-snug text-paper/90 sm:col-span-6 sm:text-2xl">{o.texto}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* QUÉ NECESITO */}
+        <section id="que-necesito" aria-labelledby="t-necesito" className="bg-celeste text-ink">
+          <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-36">
+            <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-10">
+              <h2 id="t-necesito" className="display text-[clamp(3.5rem,10vw,9.5rem)] lg:col-span-7">
+                {queNecesito.titulo}
+              </h2>
+              <div className="lg:col-span-5 lg:pb-3">
+                <p className="text-xl leading-snug sm:text-2xl">{queNecesito.entrada}</p>
+                <p className="mt-4 text-xl font-bold sm:text-2xl">{queNecesito.remate}</p>
+              </div>
+            </div>
+
+            <ul className="mt-16 grid sm:mt-20 md:grid-cols-2 md:gap-x-10">
+              {queNecesito.items.map((item) => (
+                <li key={item.nombre} className="border-t border-ink/25 py-5 sm:py-7">
+                  <span className="block text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.05] font-bold tracking-[-0.025em]">
+                    {item.nombre}
+                  </span>
+                  <span className="mt-2 block text-base text-ink/75 sm:text-lg">{item.detalle}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* GALERÍA */}
+        <section id="galeria" aria-labelledby="t-galeria" className="bg-paper text-ink">
+          <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-32">
+            <h2 id="t-galeria" className="sr-only">
+              {galeria.titulo}
+            </h2>
+
+            <div className="grid grid-flow-dense auto-rows-[44vw] grid-cols-2 gap-3 sm:gap-4 lg:auto-rows-[min(19vw,300px)] lg:grid-cols-4">
+              {galeria.items.map((item) => (
+                <Media
+                  key={item.id}
+                  tipo={item.tipo}
+                  descripcion={item.descripcion}
+                  alt={item.alt}
+                  src={item.src}
+                  tono="claro"
+                  className={`reveal-media h-full ${formatoGaleria[item.formato]}`}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CIERRE */}
+        <footer className="bg-ink text-paper">
+          <div className="mx-auto max-w-[1600px] px-5 pt-28 pb-8 sm:px-10 sm:pt-40">
+            <p
+              ref={cierreRef}
+              className="display origin-left text-[clamp(3rem,10.5vw,10rem)] [text-wrap:balance]"
+            >
+              {portada.frase}
+            </p>
+            <p className="mt-10 text-xl text-paper/85 sm:text-2xl">{cierre.gracias}</p>
+            <div className="mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-paper/15 pt-6">
+              <p className="label text-paper/70">{cierre.pie}</p>
+              <a
+                href="#portada"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('#portada');
+                }}
+                className="label text-paper/70 hover:text-paper hover:underline"
+              >
+                Volver arriba
+              </a>
+            </div>
+          </div>
+        </footer>
+      </main>
     </MotionConfig>
   );
 }

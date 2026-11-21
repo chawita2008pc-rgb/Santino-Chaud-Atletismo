@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T00:00:00Z",
+  "title": "Design System: Santino Chaud Atletismo",
+  "extensions": {
+    "colorMeta": {
+      "celeste": {
+        "role": "primary",
+        "displayName": "Celeste Argentino",
+        "canonical": "#74acdf",
+        "tonalRamp": [
+          "#0e2a44",
+          "#16406a",
+          "#1f5d93",
+          "#3a7cb9",
+          "#5895cf",
+          "#74acdf",
+          "#a6cbec",
+          "#dbeaf7"
+        ]
+      },
+      "celeste-deep": {
+        "role": "primary",
+        "displayName": "Deep Celeste",
+        "canonical": "#1f5d93",
+        "tonalRamp": [
+          "#0b2238",
+          "#123352",
+          "#18476f",
+          "#1f5d93",
+          "#3f7aae",
+          "#6b9cc6",
+          "#a3c3df",
+          "#dae7f2"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Track Ink",
+        "canonical": "#0b1217",
+        "tonalRamp": [
+          "#0b1217",
+          "#141f27",
+          "#1f2d37",
+          "#33434f",
+          "#4f616e",
+          "#73848f",
+          "#a5b1b9",
+          "#dce2e6"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Raised",
+        "canonical": "#141f27",
+        "tonalRamp": [
+          "#0b1217",
+          "#141f27",
+          "#1f2d37",
+          "#33434f",
+          "#4f616e",
+          "#73848f",
+          "#a5b1b9",
+          "#dce2e6"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "#eef1f3",
+        "tonalRamp": [
+          "#1c2329",
+          "#38424a",
+          "#5a656d",
+          "#808a91",
+          "#a8b1b7",
+          "#cfd6db",
+          "#dfe5e9",
+          "#eef1f3"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "#dfe5e9",
+        "tonalRamp": [
+          "#1c2329",
+          "#38424a",
+          "#5a656d",
+          "#808a91",
+          "#a8b1b7",
+          "#cfd6db",
+          "#dfe5e9",
+          "#eef1f3"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#9fb2c0",
+        "tonalRamp": [
+          "#1a242c",
+          "#2f3e49",
+          "#4a5c69",
+          "#677b89",
+          "#8397a5",
+          "#9fb2c0",
+          "#c3d0d9",
+          "#e5ebef"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (wdth 125)",
+        "purpose": "Hero name, section titles, closing phrase, menu links, goal figures. Scales from clamp(1.9rem,3vw,2.75rem) to 18vw/166px."
+      },
+      "figures": {
+        "displayName": "Figures (wdth 112, tabular)",
+        "purpose": "Official marks and comparison-table marks, decimal comma, units at 0.38em."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "First-person story text, scrubbed word by word."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Trajectory dates and need items at normal width."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions and bajadas, 30-40ch side measure."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Sentence-case table heads, notes, placeholder captions, footer."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-entrance",
+        "value": "expo.out (approx. cubic-bezier(0.16, 1, 0.3, 1))",
+        "purpose": "All entrances: frame expansion, letter rise, curtain reveals, menu open, count-up."
+      },
+      {
+        "name": "ease-scrub",
+        "value": "linear (scrub 0.4-0.6)",
+        "purpose": "Scroll-bound effects: parallax, word fill, pinned track, video band opening."
+      },
+      {
+        "name": "hero-open",
+        "value": "1.2s, inset(14% 10%) to inset(0)",
+        "purpose": "Hero frame opens to full bleed on load; media scales from 1.2 over 1.4s."
+      },
+      {
+        "name": "letter-stagger",
+        "value": "0.8s, 22ms stagger, yPercent 105 to 0",
+        "purpose": "Hero name letters rise."
+      },
+      {
+        "name": "curtain-reveal",
+        "value": "1.3s, inset(100% 0 0 0) to inset(0)",
+        "purpose": "Media frames reveal bottom-up on entering."
+      },
+      {
+        "name": "count-up",
+        "value": "1.4s from 0",
+        "purpose": "Official marks count up once at 88% viewport."
+      },
+      {
+        "name": "word-fill",
+        "value": "opacity 0.16 to 1, top 82% to bottom 55%",
+        "purpose": "Story text lights up as read."
+      },
+      {
+        "name": "hover-nudge",
+        "value": "300ms ease-out, 4px",
+        "purpose": "Menu bar shift, menu link indent (16px)."
+      },
+      {
+        "name": "smooth-scroll",
+        "value": "Lenis 1.1s",
+        "purpose": "Page scroll; disabled under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Navigation Header",
+      "kind": "nav",
+      "description": "Fixed, barless header in white with difference blend; wordmark in display, text links, Menu with two-bar glyph.",
+      "html": "<div class=\"ds-nav-stage\"><header class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-mark\">Santino Chaud</a><nav class=\"ds-nav-links\"><a href=\"#\">Marcas</a><a href=\"#\">Trayectoria</a><a href=\"#\">Objetivos</a><button type=\"button\" class=\"ds-nav-menu\">Menú <span class=\"ds-nav-bars\"><span></span><span></span></span></button></nav></header></div>",
+      "css": ".ds-nav-stage { background: var(--color-ink, #0b1217); } .ds-nav { display: flex; align-items: center; justify-content: space-between; height: 80px; padding: 0 40px; color: #fff; mix-blend-mode: difference; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-nav-mark { font-variation-settings: 'wdth' 125; font-weight: 800; letter-spacing: -0.03em; font-size: 1.25rem; line-height: 1; color: inherit; text-decoration: none; } .ds-nav-links { display: flex; align-items: center; gap: 28px; } .ds-nav-links a { color: inherit; font-size: 0.95rem; font-weight: 500; text-decoration: none; text-underline-offset: 0.2em; } .ds-nav-links a:hover { text-decoration: underline; } .ds-nav-menu { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; background: none; border: 0; color: inherit; font: inherit; font-size: 0.95rem; font-weight: 500; cursor: pointer; } .ds-nav-bars { display: flex; flex-direction: column; gap: 5px; width: 24px; } .ds-nav-bars span { height: 2px; background: currentColor; } .ds-nav-bars span:first-child { transition: transform 300ms; } .ds-nav-menu:hover .ds-nav-bars span:first-child { transform: translateX(4px); } .ds-nav a:focus-visible, .ds-nav-menu:focus-visible { outline: 2px solid var(--color-celeste, #74acdf); outline-offset: 4px; }"
+    },
+    {
+      "name": "Menu Overlay Links",
+      "kind": "nav",
+      "refersTo": "menu-overlay",
+      "description": "Full-screen celeste menu; display-size links on hairline rows that indent on hover.",
+      "html": "<ul class=\"ds-menu\"><li><a href=\"#\">Sobre mí</a></li><li><a href=\"#\">Mis marcas</a></li><li><a href=\"#\">Trayectoria</a></li></ul>",
+      "css": ".ds-menu { list-style: none; margin: 0; padding: 24px 40px; background: var(--color-celeste, #74acdf); color: var(--color-ink, #0b1217); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-menu li { border-bottom: 1px solid rgba(11,18,23,0.15); overflow: hidden; } .ds-menu li:first-child { border-top: 1px solid rgba(11,18,23,0.15); } .ds-menu a { display: block; padding: 12px 0; color: inherit; text-decoration: none; font-variation-settings: 'wdth' 125; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; font-size: clamp(2rem, 6vw, 4.5rem); transition: padding 300ms ease-out; } .ds-menu a:hover { padding-left: 16px; } .ds-menu a:focus-visible { outline: 2px solid var(--color-ink, #0b1217); outline-offset: 4px; }"
+    },
+    {
+      "name": "Mark Row",
+      "kind": "custom",
+      "description": "Rule-list row on the celeste field: event left, giant tabular figure right with unit in deep celeste.",
+      "html": "<ul class=\"ds-marks\"><li><span class=\"ds-marks-ev\">60 metros</span><span class=\"ds-marks-fig\">6,99<span class=\"ds-marks-unit\">s</span></span></li><li><span class=\"ds-marks-ev\">Salto en largo</span><span class=\"ds-marks-fig\">6,42<span class=\"ds-marks-unit\">m</span></span></li></ul>",
+      "css": ".ds-marks { list-style: none; margin: 0; padding: 40px; background: var(--color-celeste, #74acdf); color: var(--color-ink, #0b1217); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-marks li { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 16px; padding: 20px 0; border-top: 1px solid rgba(11,18,23,0.25); } .ds-marks li:last-child { border-bottom: 1px solid rgba(11,18,23,0.25); } .ds-marks-ev { font-size: 1.5rem; font-weight: 600; } .ds-marks-fig { font-variant-numeric: tabular-nums; font-variation-settings: 'wdth' 112; font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; font-size: clamp(3.25rem, 10vw, 7rem); } .ds-marks-unit { margin-left: 8px; font-size: 0.38em; font-weight: 600; letter-spacing: normal; color: var(--color-celeste-deep, #1f5d93); }"
+    },
+    {
+      "name": "Comparison Table",
+      "kind": "custom",
+      "refersTo": "table-row-own",
+      "description": "Hairline table on paper; his own row is the only filled row, in celeste.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Puesto</th><th class=\"ds-r\">Marca (s)</th></tr></thead><tbody><tr><th>1º</th><td class=\"ds-r\">10,62</td></tr><tr class=\"ds-own\"><th>5º, mi marca</th><td class=\"ds-r\">11,10</td></tr><tr><th>6º</th><td class=\"ds-r\">11,15</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; background: var(--color-paper, #eef1f3); color: var(--color-ink, #0b1217); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; text-align: left; } .ds-table thead tr { border-bottom: 1px solid var(--color-ink, #0b1217); } .ds-table thead th { padding: 8px 16px 8px 0; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; color: rgba(11,18,23,0.7); } .ds-table tbody tr { border-bottom: 1px solid rgba(11,18,23,0.15); } .ds-table tbody th { padding: 12px 16px 12px 0; font-size: 1.125rem; font-weight: 500; } .ds-table td { padding: 12px 0; font-variant-numeric: tabular-nums; font-variation-settings: 'wdth' 112; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-size: clamp(1.75rem, 2.6vw, 2.5rem); } .ds-r { text-align: right; } .ds-table tr.ds-own { background: var(--color-celeste, #74acdf); border-bottom: 0; } .ds-table tr.ds-own th { padding-left: 16px; font-weight: 700; } .ds-table tr.ds-own td { padding-right: 16px; }"
+    },
+    {
+      "name": "Media Slot",
+      "kind": "card",
+      "refersTo": "media-slot-dark",
+      "description": "Square-cornered media frame; while empty, shows a labeled slot naming the intended photo.",
+      "html": "<figure class=\"ds-media\"><div class=\"ds-media-slot\"><span>Foto en el podio del campeonato</span><span>Foto</span></div></figure>",
+      "css": ".ds-media { margin: 0; aspect-ratio: 4 / 3; width: 100%; max-width: 460px; overflow: hidden; } .ds-media-slot { height: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 16px; background: var(--color-ink-2, #141f27); color: var(--color-mist, #9fb2c0); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; transition: background 300ms; } .ds-media:hover .ds-media-slot { background: #1a2731; }"
+    },
+    {
+      "name": "Goal Row",
+      "kind": "custom",
+      "description": "Rule-list row on ink: celeste display figure left, body copy right.",
+      "html": "<ul class=\"ds-goals\"><li><span class=\"ds-goals-fig\">10,8 s</span><span class=\"ds-goals-txt\">Bajar mi marca en 100 metros.</span></li></ul>",
+      "css": ".ds-goals { list-style: none; margin: 0; padding: 40px; background: var(--color-ink, #0b1217); color: var(--color-paper, #eef1f3); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-goals li { display: grid; grid-template-columns: 1fr 1fr; align-items: baseline; gap: 40px; padding: 32px 0; border-top: 1px solid rgba(238,241,243,0.15); border-bottom: 1px solid rgba(238,241,243,0.15); } .ds-goals-fig { color: var(--color-celeste, #74acdf); font-variation-settings: 'wdth' 125; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; font-size: clamp(2.5rem, 6vw, 5rem); } .ds-goals-txt { font-size: 1.5rem; line-height: 1.375; color: rgba(238,241,243,0.9); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Stretched Name",
+    "overview": "The whole system is one typeface pulled to full width and three colors poured edge to edge. Archivo's width axis does the work other sites hand to a second family: the name, the section titles and every mark are set expanded and heavy (width 125, weight 800), so they read like a bib number or a stadium board; everything a sponsor actually reads drops back to normal width. Color is never sprinkled. Each section is a single drenched field of blue-black ink, cool paper or celeste argentino, and the page is read as a sequence of those fields.\n\nMedia is the other half. Frames are square-cornered, giant and often full-bleed; they open from an inset to full bleed (the hero on load, the mid-page video band on scroll) and drift with parallax. Structure comes from hairline rules between rows, never from boxes. Motion is scroll-authored and slow-settling: expo-out easing, words that light up as they are read, marks that count up from zero, a trajectory that travels sideways while the section is pinned.\n\nThe density is low and the scale is high. A section usually holds one enormous title, one block of text and one list or frame, with 96 to 144px of field above and below.",
+    "keyCharacteristics": [
+      "One family (Archivo), its width axis as the hierarchy: 125 for display, 112 for figures, 100 for reading.",
+      "Three whole-field colors (ink, paper, celeste), alternating by section; celeste is a field, not an accent dot.",
+      "Square media frames, hairline row rules, no cards, no shadows.",
+      "Scroll-bound motion: frame expansion, word-fill, count-up, pinned horizontal track.",
+      "Sentence-case labels only; no uppercase tracking, no eyebrows."
+    ],
+    "rules": [
+      {
+        "name": "The Whole Field Rule",
+        "body": "A color is applied to a full-width section or a full row, or to large type on ink (dates, goal figures, the comeback line), never to a small chip, badge or underline. If celeste appears, it fills something or it is set big.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Field Rule",
+        "body": "Every surface is ink, paper or celeste. Adjacent sections alternate fields; the only seam between two same-field sections is a hairline (paper at 10%).",
+        "section": "colors"
+      },
+      {
+        "name": "The Width Axis Rule",
+        "body": "Hierarchy is expressed by width before size: display is always width 125, figures 112, reading text 100. Never introduce a second family or an intermediate width for emphasis.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Labels are small and sentence-case, and they sit beside or below what they describe. No uppercase tracked kicker above a title.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Lift Rule",
+        "body": "Nothing floats. If an element needs separation, give it a hairline or a different field, not a shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do set every headline and every number in Archivo at width 125 (display) or 112 (figures); keep reading text at width 100.",
+      "Do give each section one whole field: ink (#0b1217), paper (#eef1f3) or celeste (#74acdf), alternating.",
+      "Do separate rows with 1px hairlines at 15 to 25% opacity of the text color, top rule per row plus a closing bottom rule.",
+      "Do keep media square-cornered and as large as the layout allows, with an empty labeled slot instead of a placeholder image when the real photo is missing.",
+      "Do write numbers with a decimal comma and units at 0.38em beside the figure.",
+      "Do provide a static fallback for every scroll effect under reduced motion."
+    ],
+    "donts": [
+      "Don't use rounded cards, pill buttons or boxed stat tiles; the page has no round forms.",
+      "Don't put uppercase tracked eyebrow labels above titles.",
+      "Don't use celeste as a small accent (dots, badges, underlines, gradient bars); it fills a field or a row, or sets large type on ink.",
+      "Don't add box-shadows or a solid header bar.",
+      "Don't introduce a second typeface or a new grey; muted text is the base text color at lower opacity, or mist on ink.",
+      "Don't fill media slots with stock or invented imagery."
+    ]
+  }
+}

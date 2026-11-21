@@ -1,19 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
-  --color-tartan: #C2412D;
-  --color-ink: #1A1416;
-  --color-goal: #1F5FD1;
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0b1217;
+  --color-ink-2: #141f27;
+  --color-paper: #eef1f3;
+  --color-paper-2: #dfe5e9;
+  --color-celeste: #74acdf;
+  --color-celeste-deep: #1f5d93;
+  --color-mist: #9fb2c0;
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
-    color: #ffffff;
-    background-color: #1A1416;
+    font-variation-settings: "wdth" 100;
+    color: var(--color-paper);
+    background-color: var(--color-ink);
     scroll-padding-top: 5rem;
+    -webkit-font-smoothing: antialiased;
+    scrollbar-color: var(--color-celeste) var(--color-ink);
+  }
+
+  ::selection {
+    background: var(--color-celeste);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-celeste);
+    outline-offset: 4px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
   }
 
   html.lenis,
@@ -24,17 +44,25 @@
   .lenis.lenis-smooth {
     scroll-behavior: auto !important;
   }
-
-  .lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
-  }
 }
 
-.font-display-condensed {
-  font-family: var(--font-display);
-  font-weight: 700;
+/* Archivo usa su eje de ancho como sistema: expandida para titulares y cifras */
+.display {
+  font-variation-settings: "wdth" 125;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
 }
 
-.tabular-figures {
+.figures {
   font-variant-numeric: tabular-nums;
+  font-variation-settings: "wdth" 112;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
