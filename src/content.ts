@@ -165,7 +165,7 @@ export const siteContent = {
       {
         fecha: '2026',
         descripcion:
-          'Me federé en el club de Talar en Tigre y compito en torneos metropolitanos (11,17 en 100 m · 22,7 en 200 m · 6,42 m en largo).',
+          'Me federé en el club de Talar en Tigre y compito en torneos metropolitanos (11,17 en 100 m · 6,42 m en largo).',
         imagen: {
           descripcion: '2026 · Torneos metropolitanos',
           alt: 'Santino en el podio de un torneo metropolitano en 2026',
