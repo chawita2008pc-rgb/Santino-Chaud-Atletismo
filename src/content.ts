@@ -154,7 +154,7 @@ export const siteContent = {
       {
         fecha: 'La champion, 3 años seguidos',
         descripcion:
-          '“Es el trofeo para quien suma más puntos en el día, en todas las disciplinas. Para ganarlo hay que ser bueno en todo.”',
+          '“Es el trofeo de los sports, para quien suma más puntos en el día, en todas las disciplinas. Para ganarlo hay que ser bueno en todo.”',
         imagen: {
           descripcion: 'Trofeo de la champion',
           alt: 'Video de los sports del colegio',
