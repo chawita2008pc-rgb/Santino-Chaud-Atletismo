@@ -34,6 +34,8 @@ export function ScrubText({text, className = '', as: Tag = 'p', intense = false}
             start: intense ? 'top 88%' : 'top 82%',
             end: intense ? 'bottom 60%' : 'bottom 72%',
             scrub: intense ? 0.6 : 0.4,
+            // Recalcular después de las secciones fijadas (pin) que están más arriba
+            refreshPriority: -1,
           },
         },
       );
