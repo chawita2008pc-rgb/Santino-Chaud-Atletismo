@@ -448,9 +448,11 @@ export default function App() {
             </div>
 
             <div className="mt-16 border-t border-ink pt-8 sm:mt-20">
-              <p className="display max-w-[22ch] text-[clamp(2rem,4.4vw,4rem)] leading-[1] [text-wrap:balance]">
-                {comparativa.cierre}
-              </p>
+              <ScrubText
+                intense
+                text={comparativa.cierre}
+                className="display max-w-[22ch] text-[clamp(2rem,4.4vw,4rem)] leading-[1] [text-wrap:balance]"
+              />
             </div>
           </div>
         </section>
