@@ -1,3 +1,4 @@
+import {Fragment} from 'react';
 import {siteContent} from '../content';
 import {Media} from './Media';
 
@@ -10,7 +11,13 @@ export function Sports() {
       <div className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10 sm:py-32">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-4 sm:mb-16">
           <h2 id="t-sports" className="display text-[clamp(3rem,8vw,7.5rem)]">
-            {titulo}
+            {/* En Archivo expandida la "r" pisa a la "t": se separa solo ese par */}
+            {titulo.split('rt').map((parte, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span className="tracking-[0.03em]">r</span>}
+                {i > 0 ? `t${parte}` : parte}
+              </Fragment>
+            ))}
           </h2>
           <p className="max-w-[34ch] text-lg text-ink/75">{bajada}</p>
         </div>
