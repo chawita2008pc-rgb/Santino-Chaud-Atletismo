@@ -259,7 +259,7 @@ export const siteContent = {
         ],
       },
     ] satisfies TablaComparativa[],
-    cierre: 'En mi primer año entrenando atletismo en serio, ya estaría en la final del Campeonato Argentino U20.',
+    cierre: 'En mi primer año entrenando atletismo en serio, ya estoy en los tiempos de la final del Campeonato Argentino U20.',
     vientoAclaracion:
       '* Viento a favor de más de +2,0 m/s, el máximo permitido: la marca cuenta en la competencia, pero no para récords ni rankings.',
     nota: 'Fuente: World Athletics, Campeonato Argentino U20, Rosario, 9 y 10 de mayo de 2026. Mis marcas son de otras competencias y se muestran como referencia.',
