@@ -194,7 +194,7 @@ export const siteContent = {
         },
       },
       {
-        fecha: 'Octubre 2026',
+        fecha: "Octubre 2026 · Sports Bede's",
         descripcion: 'Champion ganada lesionado y enfermo.',
         imagen: {
           descripcion: 'Octubre 2026 · Champion',
