@@ -92,7 +92,7 @@ export const siteContent = {
   sobreMi: {
     titulo: 'Sobre mí',
     texto:
-      'Nunca tuve un entrenador profesional. Nunca tuve a nadie que me enseñara bien la técnica. Aun así, tres años después de entrar por primera vez a un gimnasio, llegué a marcas de final del Campeonato Argentino U20. En 2026 decidí dedicarme de lleno, y ahora quiero saber hasta dónde puedo llegar si alguien me enseña a hacerlo bien.',
+      'Todo empezó en el colegio, donde descubrí mi pasión por el atletismo y que podía alcanzar marcas que ni imaginaba. Hace tres años comencé a entrenar en el gimnasio, aprendiendo, superándome y buscando mejorar cada día. Ese camino me llevó a alcanzar marcas de final del Campeonato Argentino U20. En 2026 decidí ir de lleno por el atletismo, con ganas de seguir creciendo y descubrir hasta dónde puedo llegar.',
   },
 
   sports: {
