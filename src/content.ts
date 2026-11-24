@@ -92,7 +92,7 @@ export const siteContent = {
   sobreMi: {
     titulo: 'Sobre mí',
     texto:
-      'Tengo 18 años y vivo en Pilar. Hace 3 años arranqué en el gimnasio. En los últimos 3 años me fue muy bien en atletismo del colegio, y en 2026 decidí dedicarme de lleno: ahora entreno y compito afuera.',
+      'Nunca tuve un entrenador profesional. Nunca tuve a nadie que me enseñara bien la técnica. Aun así, tres años después de entrar por primera vez a un gimnasio, llegué a marcas de final del Campeonato Argentino U20. En 2026 decidí dedicarme de lleno, y ahora quiero saber hasta dónde puedo llegar si alguien me enseña a hacerlo bien.',
   },
 
   sports: {
