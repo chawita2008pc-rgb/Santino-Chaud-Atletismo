@@ -99,7 +99,7 @@ export const siteContent = {
     titulo: 'Los sports',
     bajada: 'De dónde vengo: un colegio y una camada que compiten en todo.',
     texto:
-      'Los sports son la fecha más importante del año, y mi camada es la más competitiva de la historia del colegio. En 2026 ganamos el ADE, el torneo intercolegial, y a donde vamos somos competitivos. Competir con un equipo así me empujó a ser bueno en todo: en los últimos tres años gané 24 medallas en 9 disciplinas.',
+      'Los sports son la fecha más importante del año, y mi camada es una de las más competitivas de la historia del colegio. En 2026 ganamos el ADE, el torneo intercolegial, y a donde vamos somos competitivos. Competir con un equipo así me empujó a ser bueno en todo: en los últimos tres años gané 24 medallas en 9 disciplinas.',
     numeros: [
       {id: 'medallas', valor: 24, etiqueta: 'medallas'},
       {id: 'disciplinas', valor: 9, etiqueta: 'disciplinas'},
@@ -268,10 +268,16 @@ export const siteContent = {
   objetivos: {
     titulo: 'Objetivos 2027',
     items: [
-      {cifra: '10,7 s', texto: 'Llegar a los 10,7 segundos en 100 m.'},
-      {cifra: '6,80 m', texto: 'Pasar los 6,80 m en salto en largo.'},
+      {cifra: '10,7 s', texto: 'En 100 m. A una centésima del campeón argentino U20 de 2026, que hizo 10,69.'},
+      {
+        cifra: '6,80 m',
+        texto: 'En salto en largo. Más que todos en la final U20 de 2026, menos el ganador, que saltó con viento de más.',
+      },
       {cifra: 'Nacionales', texto: 'Competir en los Nacionales.'},
-      {cifra: 'Club nuevo', texto: 'Entrenar con un entrenador profesional en un club nuevo.'},
+      {
+        cifra: 'Club nuevo',
+        texto: 'Por primera vez, alguien que me enseñe bien la técnica: un entrenador profesional en un club nuevo.',
+      },
     ] satisfies ObjetivoItem[],
   },
 
